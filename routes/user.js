@@ -43,7 +43,7 @@ router.post("/register", async (req, res) => {
 
         await console.log(savedUser);
         if (savedUser !== null) {
-          res.redirect("/login");
+          console.log("User registered!");
         } else {
           res.send(
             "There is already a user who has registered with that information ¯_(ツ)_/¯"
