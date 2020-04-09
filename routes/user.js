@@ -7,6 +7,7 @@ const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 const argon2 = require("argon2");
 const crypto = require("crypto");
+const config = require("../config/config");
 
 //====================REGISTER====================//
 router.post("/register", async (req, res) => {
@@ -21,8 +22,8 @@ router.post("/register", async (req, res) => {
       first: first,
       last: last,
       email: email,
-      phone_number: phone_number
-    }
+      phone_number: phone_number,
+    },
   });
 
   // registers user if they don't exist
@@ -36,7 +37,7 @@ router.post("/register", async (req, res) => {
         const emailVerificationToken = crypto.randomBytes(20).toString("hex");
 
         // the token expires in one day
-        const emailVerificationExpires = new Data(Date.now() + 86400000);
+        const emailVerificationExpires = new Date(Date.now() + 86400000);
 
         const user = models.Users.build({
           first: first,
@@ -45,11 +46,10 @@ router.post("/register", async (req, res) => {
           phone_number: phone_number,
           password: hash,
           emailVerificationToken: emailVerificationToken,
-          emailVerificationExpires: emailVerificationExpires
+          emailVerificationExpires: emailVerificationExpires,
         });
         const savedUser = await user.save();
 
-        await console.log(savedUser);
         if (savedUser !== null) {
           console.log("User registered!");
         } else {
@@ -60,14 +60,13 @@ router.post("/register", async (req, res) => {
 
         // sending email to verify provided email address
         console.log("Sending email to verify provided email address...");
-
         const transporter = nodemailer.createTransport({
-          service: config.email.service,
+          service: config.development.service,
           secure: false,
           auth: {
-            user: config.email.user, // ethereal user
-            pass: config.email.password // ethereal password
-          }
+            user: config.development.user,
+            pass: config.development.pass,
+          },
         });
 
         const emailVerificationMessage = `
@@ -78,26 +77,31 @@ router.post("/register", async (req, res) => {
           </div>
         `;
 
+        console.log(email);
+
         const messageSent = await transporter.sendMail({
           from: "joebenwilsonmusic@gmail.com",
           to: email,
           subject: "Welcome to Budgetr!",
-          html: emailVerificationMessage
+          html: emailVerificationMessage,
         });
 
         if (!messageSent) {
           console.log(
             "There was an error sending the email. Our cyborgs have failed you :("
           );
+        } else {
+          console.log("Email sent!");
         }
 
-        const token = jwt.sign({
-          ...savedUser
-        });
+        const token = jwt.sign(
+          { email: savedUser.email },
+          process.env.SECRET_KEY
+        );
 
         return res.status(200).json({
           savedUser,
-          token
+          token,
         });
       }
     });
@@ -110,7 +114,7 @@ router.post("/register", async (req, res) => {
 
 // see all registered users. delete this one XD
 router.get("/view-users", (req, res) => {
-  models.Users.findAll().then(users => {
+  models.Users.findAll().then((users) => {
     res.json({ RegisteredUsers: users });
   });
 });
@@ -119,8 +123,8 @@ router.get("/view-users", (req, res) => {
 router.post("/delete-user/:id", (req, res) => {
   models.Users.destroy({
     where: {
-      id: req.params.id
-    }
+      id: req.params.id,
+    },
   });
 });
 
@@ -129,15 +133,15 @@ router.post("/login", async (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
-  let permUser = await models.Users.findOne({
+  await models.Users.findOne({
     where: {
-      email: email
-    }
-  }).then(function(permUser) {
+      email: email,
+    },
+  }).then(function (permUser) {
     if (!permUser) {
       console.log("nope");
     } else {
-      bcrypt.compare(password, permUser.password, function(err, result) {
+      bcrypt.compare(password, permUser.password, function (err, result) {
         if (result == true) {
           console.log(permUser.password);
           const token = jwt.sign(
