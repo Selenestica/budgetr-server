@@ -24,6 +24,9 @@ dotenv.config();
 const userRouter = require("./routes/user");
 app.use("/users", userRouter);
 
+//const authRouter = require("./routes/auth");
+//app.use("/auth", authRouter);
+
 /*
 app.get('bank-accounts', (req, res) => {
     const headers = req.headers['authorization']  // will return Bearer token
@@ -106,14 +109,14 @@ app.post("/add-income-source", (req, res) => {
     frequency: frequency,
     amount: amount,
     next_payment_date: next_payment_date,
-    user_id: user_id
+    user_id: user_id,
   });
 
-  income_source.save().then(savedIncomeSource => res.redirect("/"));
+  income_source.save().then((savedIncomeSource) => res.redirect("/"));
 });
 
 app.get("/view-income-sources", (req, res) => {
-  models.Income_Sources.findAll().then(income_sources => {
+  models.Income_Sources.findAll().then((income_sources) => {
     res.json({ income_sources: income_sources });
   });
 });
@@ -133,14 +136,14 @@ app.post("/add-expense", (req, res) => {
     frequency: frequency,
     amount: amount,
     next_payment_date: next_payment_date,
-    user_id: user_id
+    user_id: user_id,
   });
 
-  expense.save().then(savedExpense => res.redirect("/"));
+  expense.save().then((savedExpense) => res.redirect("/"));
 });
 
 app.get("/view-expenses", (req, res) => {
-  models.Expenses.findAll().then(expenses => {
+  models.Expenses.findAll().then((expenses) => {
     res.json({ expenses: expenses });
   });
 });
@@ -158,14 +161,14 @@ app.post("/add-savings-goal", (req, res) => {
     type: type,
     user_id: user_id,
     deadline_date: deadline_date,
-    amount: amount
+    amount: amount,
   });
 
-  savingsGoal.save().then(savedSavingsGoal => res.redirect("/"));
+  savingsGoal.save().then((savedSavingsGoal) => res.redirect("/"));
 });
 
 app.get("/view-savings-goals", (req, res) => {
-  models.Savings_Goals.findAll().then(savings_goals => {
+  models.Savings_Goals.findAll().then((savings_goals) => {
     res.json({ savings_goals: savings_goals });
   });
 });
@@ -173,8 +176,8 @@ app.get("/view-savings-goals", (req, res) => {
 app.post("/delete-savings-goals/:id", (req, res) => {
   models.Savings_Goals.destroy({
     where: {
-      id: req.params.id
-    }
+      id: req.params.id,
+    },
   });
 });
 

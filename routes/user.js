@@ -39,7 +39,8 @@ router.post("/register", async (req, res) => {
         // the token expires in one day
         const emailVerificationExpires = new Date(Date.now() + 86400000);
 
-        const user = models.Users.build({
+        console.log(emailVerificationToken, emailVerificationExpires);
+        const user = await models.Users.build({
           first: first,
           last: last,
           email: email,
@@ -73,7 +74,7 @@ router.post("/register", async (req, res) => {
           <div>
             <p>Welcome to Budgetr!</p>
             <p>Please click the link below to continue your registration. Thanks!</p>
-            <a href = http://localhost:3000/verifyEmail/${email}/${emailVerificationToken}>Verify Email</a>
+            <a href = http://localhost:3000/verify-email/${email}/${emailVerificationToken}>Verify Email</a>
           </div>
         `;
 
