@@ -24,8 +24,8 @@ dotenv.config();
 const userRouter = require("./routes/user");
 app.use("/users", userRouter);
 
-//const authRouter = require("./routes/auth");
-//app.use("/auth", authRouter);
+const authRouter = require("./routes/auth");
+app.use("/auth", authRouter);
 
 /*
 app.get('bank-accounts', (req, res) => {
