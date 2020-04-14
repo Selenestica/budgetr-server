@@ -37,9 +37,10 @@ router.post("/register", async (req, res) => {
         const emailVerificationToken = crypto.randomBytes(20).toString("hex");
 
         // the token expires in one day
-        const emailVerificationExpires = new Date(Date.now() + 86400000);
+        const emailVerificationExpiresDate = Date.now();
+        const emailVerificationExpires = emailVerificationExpiresDate.toString();
+        console.log(emailVerificationExpires);
 
-        console.log(emailVerificationToken, emailVerificationExpires);
         const user = await models.Users.build({
           first: first,
           last: last,
@@ -49,6 +50,7 @@ router.post("/register", async (req, res) => {
           emailVerificationToken: emailVerificationToken,
           emailVerificationExpires: emailVerificationExpires,
         });
+
         const savedUser = await user.save();
 
         if (savedUser !== null) {
@@ -77,8 +79,6 @@ router.post("/register", async (req, res) => {
             <a href = http://localhost:3000/verify-email/${email}/${emailVerificationToken}>Verify Email</a>
           </div>
         `;
-
-        console.log(email);
 
         const messageSent = await transporter.sendMail({
           from: "joebenwilsonmusic@gmail.com",
