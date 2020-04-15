@@ -39,7 +39,6 @@ router.post("/register", async (req, res) => {
         // the token expires in one day
         const emailVerificationExpiresDate = Date.now();
         const emailVerificationExpires = emailVerificationExpiresDate.toString();
-        console.log(emailVerificationExpires);
 
         const user = await models.Users.build({
           first: first,
