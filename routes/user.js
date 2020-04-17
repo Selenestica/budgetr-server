@@ -130,31 +130,33 @@ router.post("/delete-user/:id", (req, res) => {
 
 //====================LOGIN====================//
 router.post("/login", async (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
+  try {
+    const email = req.body.email;
+    const password = req.body.password;
 
-  await models.Users.findOne({
-    where: {
-      email: email,
-    },
-  }).then(function (permUser) {
-    if (!permUser) {
-      console.log("nope");
-    } else {
-      bcrypt.compare(password, permUser.password, function (err, result) {
-        if (result == true) {
-          console.log(permUser.password);
-          const token = jwt.sign(
-            { email: permUser.email },
-            process.env.SECRET_KEY
-          );
-          res.json({ token: token });
-        } else {
-          console.log("incorrect");
-        }
-      });
-    }
-  });
+    await models.Users.findOne({
+      where: {
+        email: email,
+      },
+    }).then(function (permUser) {
+      if (!permUser) {
+        console.log("There isn't a user associated with that email address.");
+      } else {
+        bcrypt.compare(password, permUser.password, function (err, result) {
+          if (result === true) {
+            console.log("Success!");
+            const token = jwt.sign(
+              { email: permUser.email },
+              process.env.SECRET_KEY
+            );
+            return res.status(200).json({ token: token }).end();
+          }
+        });
+      }
+    });
+  } catch (e) {
+    return res.status(500).json({ error: e.toString() }).end();
+  }
 });
 
 module.exports = router;

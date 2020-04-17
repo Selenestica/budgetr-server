@@ -5,7 +5,7 @@ const models = require("../models");
 router.post("/verify-email", async (req, res) => {
   try {
     const { email, token } = req.body;
-    const date = new Date();
+    //const date = new Date();
     const newUser = await models.Users.update(
       { emailVerified: true },
       {
