@@ -134,26 +134,25 @@ router.post("/login", async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
 
-    await models.Users.findOne({
+    const permUser = await models.Users.findOne({
       where: {
         email: email,
       },
-    }).then(function (permUser) {
-      if (!permUser) {
-        console.log("There isn't a user associated with that email address.");
-      } else {
-        bcrypt.compare(password, permUser.password, function (err, result) {
-          if (result === true) {
-            console.log("Success!");
-            const token = jwt.sign(
-              { email: permUser.email },
-              process.env.SECRET_KEY
-            );
-            return res.status(200).json({ token: token }).end();
-          }
-        });
-      }
     });
+    if (!permUser) {
+      return res.status(500).json({ message: "Email not found." }).end();
+    } else {
+      const passwordCompare = await bcrypt.compare(password, permUser.password);
+      if (passwordCompare === true) {
+        const token = jwt.sign(
+          { email: permUser.email },
+          process.env.SECRET_KEY
+        );
+        return res.status(200).json({ token: token }).end();
+      } else {
+        return res.status(500).json({ message: "Incorrect password." }).end();
+      }
+    }
   } catch (e) {
     return res.status(500).json({ error: e.toString() }).end();
   }
