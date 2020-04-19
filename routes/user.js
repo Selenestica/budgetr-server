@@ -140,11 +140,9 @@ router.post("/login", async (req, res) => {
       },
     });
     if (!permUser) {
-      console.log("Email not found");
       return res.status(500).json({ message: "Email not found." }).end();
     } else {
       const passwordCompare = await bcrypt.compare(password, permUser.password);
-      console.log(passwordCompare);
       if (passwordCompare === true) {
         const token = jwt.sign(
           { email: permUser.email },
