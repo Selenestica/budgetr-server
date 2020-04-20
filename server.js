@@ -1,6 +1,5 @@
 //**************************************** DEPENDENCIES ****************************************//
 const express = require("express");
-const plaid = require("plaid");
 const dotenv = require("dotenv");
 const path = require("path");
 const jwt = require("jsonwebtoken");
@@ -27,72 +26,12 @@ app.use("/users", userRouter);
 const authRouter = require("./routes/auth");
 app.use("/auth", authRouter);
 
-/*
-app.get('bank-accounts', (req, res) => {
-    const headers = req.headers['authorization']  // will return Bearer token
-    const token = headers.split('')[1]
-
-    jwt.verify(token, 'secretkey', (error, decoded) => {
-        if(error) {
-            res.json({success: false, message: 'Unable to verify'})
-        }
-        else if (decoded) {
-            res.json([{name: 'Wells Fargo', amount: 1000000}])
-        }
-    })
-
-    res.send('BANK_ACCOUNTS')
-})
-*/
-
-//catch function for async
-function handleError(errorMessage) {
-  console.error(errorMessage);
-}
-
-// creating a new Plaid account
-const client = new plaid.Client(
-  process.env.PLAID_CLIENT_ID,
-  process.env.PLAID_SECRET,
-  process.env.PLAID_PUBLIC_KEY,
-  plaid.environments.sandbox
-);
+const plaidRouter = require("./routes/plaid");
+app.use("/plaid", plaidRouter);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
-
-//**************************************** PLAID ****************************************//
-//logging into plaid sandbox...
-//username = user_good
-//password = pass_good
-
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "plaid-link.html"));
-});
-
-app.post("/plaid_token_exchange", async (req, res) => {
-  const { publicToken } = req.body;
-  const { access_token } = await client
-    .exchangePublicToken(publicToken)
-    .catch(handleError);
-  const { accounts, item } = await client
-    .getAccounts(access_token)
-    .catch(handleError);
-
-  console.log({ accounts, item });
-});
-
-//**************************************** PLAID DATA TO DATABASE ****************************************//
-/*
-const item = new Plaid_Item({
-    available_products: item.available_products,
-    billed_products: item.billed_products,
-    institution_id: item.institution_id,
-    item_id: item.item_id,
-    webhook: item.webhook
-})
-*/
 
 //**************************************** INCOMES FUNCTIONS ****************************************//
 app.post("/add-income-source", (req, res) => {
