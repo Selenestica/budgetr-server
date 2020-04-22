@@ -2,6 +2,7 @@ const express = require("express");
 const plaid = require("plaid");
 const router = express.Router();
 const dotenv = require("dotenv");
+const path = require("path");
 
 dotenv.config();
 
