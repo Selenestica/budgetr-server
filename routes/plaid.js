@@ -20,7 +20,7 @@ const client = new plaid.Client(
 //password = pass_good
 
 router.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "plaid-link.html"));
+  res.sendFile(path.join(__dirname, "plaid/plaid-link.html"));
 });
 
 router.post("/plaid_token_exchange", async (req, res) => {
