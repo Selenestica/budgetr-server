@@ -32,7 +32,14 @@ router.post("/plaid_token_exchange", async (req, res) => {
     .getAccounts(access_token)
     .catch(handleError);
 
-  console.log({ accounts, item });
+  //console.log({ accounts, item });
+  accounts.map((account) => {
+    const accountBalances = account.balances;
+    const accountName = account.subtype;
+    if (accountName === "checking") {
+      console.log(accountBalances);
+    }
+  });
 });
 
 //catch function for async

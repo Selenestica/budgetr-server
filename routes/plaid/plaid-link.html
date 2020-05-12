@@ -45,7 +45,7 @@
             // The metadata object contains info about the institution the
             // user selected and the account ID or IDs, if the
             // Select Account view is enabled.
-            $.post("/plaid_token_exchange", {
+            $.post("/plaid/plaid_token_exchange", {
               publicToken: public_token,
             });
           },
