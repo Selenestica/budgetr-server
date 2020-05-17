@@ -3,6 +3,7 @@ const plaid = require("plaid");
 const router = express.Router();
 const dotenv = require("dotenv");
 const path = require("path");
+const models = require("../models");
 
 dotenv.config();
 
@@ -20,7 +21,9 @@ const client = new plaid.Client(
 //password = pass_good
 
 router.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "plaid/plaid-link.html"));
+  const user_token = req.body;
+  console.log(user_token);
+  res.sendFile(path.join(__dirname, "plaid/plaid-link.html"), user_token);
 });
 
 router.post("/plaid_token_exchange", async (req, res) => {
@@ -32,12 +35,18 @@ router.post("/plaid_token_exchange", async (req, res) => {
     .getAccounts(access_token)
     .catch(handleError);
 
-  //console.log({ accounts, item });
-  accounts.map((account) => {
-    const accountBalances = account.balances;
-    const accountName = account.subtype;
-    if (accountName === "checking") {
-      console.log(accountBalances);
+  accounts.map(async (account) => {
+    if (account.subtype === "checking") {
+      const checking_account_info = await models.Checking_Accounts.build({
+        available_funds: account.balances.available,
+        current_funds: account.balances.current,
+      });
+      const saved_check_info = await checking_account_info.save();
+      if (saved_check_info) {
+        console.log("New checking info saved.");
+      } else {
+        console.log("Something went wrong.");
+      }
     }
   });
 });
