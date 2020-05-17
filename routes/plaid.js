@@ -44,6 +44,7 @@ router.post("/plaid_token_exchange", async (req, res) => {
       const saved_check_info = await checking_account_info.save();
       if (saved_check_info) {
         console.log("New checking info saved.");
+        res.redirect("http://localhost:3000/");
       } else {
         console.log("Something went wrong.");
       }
